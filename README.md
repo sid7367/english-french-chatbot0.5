@@ -53,7 +53,7 @@ sentencepiece
 `Bonjour, comment allez-vous ?`
 
 ## 🧑‍💻 Author
-Developed by **<Your Name>**  
+Developed by **Sidhaarth Mohandas**  
 Project for demonstration of **AI-driven NLP Translation** and interactive chatbot design.
 
 ---
