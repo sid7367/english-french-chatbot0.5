@@ -59,3 +59,25 @@ Project for demonstration of **AI-driven NLP Translation** and interactive chatb
 ---
 
 💡 *This project showcases the integration of Natural Language Processing and modern AI frameworks to create real-time language translation applications.*
+
+## 🔧 Dependency updates (2025-10-25)
+
+I made a few small, conservative fixes to `requirements.txt` to avoid common resolver conflicts and ensure the environment installs cleanly:
+
+- `fsspec==2025.9.0` → `fsspec==2024.11.0` (2025 release looked unavailable)
+- `protobuf==5.29.3` → `protobuf<5,>=3.20.0` (many packages are incompatible with Protobuf 5)
+- `psutil==7.0.0` → `psutil==5.9.5` (7.0.0 is not an official release)
+- `types-python-dateutil==2.9.0.20241206` → `types-python-dateutil==2.9.0` (normalised anomalous timestamped wheel)
+
+Local validation performed:
+
+```powershell
+# create and activate venv (Windows PowerShell)
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -U pip setuptools wheel
+pip install -r .\requirements.txt
+pip check  # returned: "No broken requirements found."
+```
+
+If you see resolver errors on your machine, paste the `pip install` output here and I will adjust specific pins further.
