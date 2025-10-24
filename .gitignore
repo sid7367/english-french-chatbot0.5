@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+venv/
+.env/
+
+# Model files
+*.bin
+*.pt
+*.h5
+
+# Streamlit
+.streamlit/
+
+# Cache
+cache/
+logs/
