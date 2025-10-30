@@ -26,7 +26,10 @@ st.markdown("""
         width: 100%;
         max-width: 600px;
         margin: auto;
-        padding-bottom: 120px; /* space for bottom bar */
+        height: calc(100vh - 250px); /* Fixed height for scrolling */
+        overflow-y: auto; /* Enable vertical scrolling */
+        padding: 10px;
+        margin-bottom: 120px; /* space for bottom bar */
     }
 
     .user-bubble {
@@ -58,6 +61,7 @@ st.markdown("""
         background-color: white;
         padding: 10px 20px;
         box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        z-index: 1000;
     }
 
     @media (max-width: 600px) {
@@ -75,13 +79,28 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # --- Display Chat Messages ---
-st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
+st.markdown("<div class='chat-container' id='chat-container'>", unsafe_allow_html=True)
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         st.markdown(f"<div class='user-bubble'>{msg['content']}</div>", unsafe_allow_html=True)
     else:
         st.markdown(f"<div class='bot-bubble'>{msg['content']}</div>", unsafe_allow_html=True)
+
+# Add an anchor at the bottom for auto-scroll
+st.markdown("<div id='bottom-anchor'></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
+
+# Auto-scroll JavaScript
+st.markdown("""
+    <script>
+        setTimeout(function() {
+            var element = document.getElementById('bottom-anchor');
+            if (element) {
+                element.scrollIntoView({behavior: 'smooth', block: 'end'});
+            }
+        }, 100);
+    </script>
+""", unsafe_allow_html=True)
 
 # --- Input Bar Fixed at Bottom ---
 with st.container():
