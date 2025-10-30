@@ -26,7 +26,7 @@ st.markdown("""
         width: 100%;
         max-width: 600px;
         margin: auto;
-        height: calc(100vh - 250px); /* Fixed height for scrolling */
+        height: calc(100vh - 250px); /* Fixed height: 250px accounts for header, title, input bar */
         overflow-y: auto; /* Enable vertical scrolling */
         padding: 10px;
         margin-bottom: 120px; /* space for bottom bar */
@@ -90,7 +90,7 @@ for msg in st.session_state.messages:
 st.markdown("<div id='bottom-anchor'></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Auto-scroll JavaScript
+# Auto-scroll JavaScript - triggers on each page rerender to show latest messages
 st.markdown("""
     <script>
         setTimeout(function() {
