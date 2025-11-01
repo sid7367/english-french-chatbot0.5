@@ -2,8 +2,8 @@ from transformers import MarianMTModel, MarianTokenizer
 
 # Load pre-trained model and tokenizer for English→French
 model_name = 'Helsinki-NLP/opus-mt-en-fr'
-tokenizer = MarianTokenizer.from_pretrained(model_name)
-model = MarianMTModel.from_pretrained(model_name)
+tokenizer = MarianTokenizer.from_pretrained(model_name) # converts text to tokens
+model = MarianMTModel.from_pretrained(model_name)  # performs the translation
 
 # Sample English sentences
 sentences = [
