@@ -1,21 +1,27 @@
 import streamlit as st
-import time
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import MarianMTModel, MarianTokenizer
 
-# --- Load Model ---
+# ---------- Load Model ----------
 @st.cache_resource
 def load_model():
     model_name = "Helsinki-NLP/opus-mt-en-fr"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-    return tokenizer, model
+    tokenizer = MarianTokenizer.from_pretrained(model_name)
+    model = MarianMTModel.from_pretrained(model_name)
+    return model, tokenizer
 
-tokenizer, model = load_model()
+model, tokenizer = load_model()
 
-# --- Streamlit Config ---
-st.set_page_config(page_title="Chat Translator 💬", page_icon="🌍", layout="centered")
+# ---------- Translation Function ----------
+def translate_to_french(text):
+    tokens = tokenizer(text, return_tensors="pt", padding=True)
+    translated_tokens = model.generate(**tokens)
+    return tokenizer.decode(translated_tokens[0], skip_special_tokens=True)
 
-# --- Custom CSS ---
+# ---------- Streamlit Page Config ----------
+st.set_page_config(page_title="English–French Chatbot", layout="wide")
+st.title("🇬🇧➡️🇫🇷 English to French Translation Chatbot")
+
+# ---------- Custom CSS ----------
 st.markdown("""
     <style>
     body { background-color: #F5F7FA; }
@@ -68,13 +74,10 @@ st.markdown("""
         .user-bubble, .bot-bubble {
             max-width: 95%;
         }
-    }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🌍 English → French Chat Translator")
-
-# --- Initialize Session ---
+# ---------- Chat Session ----------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -120,17 +123,13 @@ if submitted and user_input.strip():
     outputs = model.generate(**inputs)
     translated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    # Typing animation (inside chat container)
-    st.markdown("<div class='bot-bubble'>", unsafe_allow_html=True)
-    display_text = ""
-    placeholder = st.empty()
-    for ch in translated_text:
-        display_text += ch
-        placeholder.markdown(f"<div class='bot-bubble'>{display_text}</div>", unsafe_allow_html=True)
-        time.sleep(0.03)
-    st.markdown("</div>", unsafe_allow_html=True)
-    placeholder.empty()
+with col1:
+    user_input = st.text_input("Type your message in English:", key="input", label_visibility="collapsed")
 
-    # Save AI message
-    st.session_state.messages.append({"role": "bot", "content": translated_text})
-    st.rerun()
+with col2:
+    if st.button("Translate"):
+        if user_input.strip() != "":
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            translation = translate_to_french(user_input)
+            st.session_state.messages.append({"role": "bot", "content": translation})
+            st.rerun()
