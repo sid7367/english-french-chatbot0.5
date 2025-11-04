@@ -6,6 +6,7 @@ from typing import Tuple
 import html
 import io
 import time
+import streamlit.components.v1 as components
 
 # ---------------- Page config (must be first Streamlit call) ----------------
 st.set_page_config(page_title="English ↔ French Translator", layout="wide", initial_sidebar_state="expanded")
@@ -135,35 +136,71 @@ st.write("Type English text and get a French translation. Uses a Marian model lo
 st.markdown("<div class='chat-container' id='chat-container'>", unsafe_allow_html=True)
 for i, msg in enumerate(st.session_state.messages):
     safe_text = html.escape(msg["content"]).replace("\n", "<br>")
+
     if msg["role"] == "user":
         st.markdown(f"<div class='user-bubble'>{safe_text}</div>", unsafe_allow_html=True)
+
     else:
-        # add a small copy-button and timestamp displayed under the bubble via meta text
-        st.markdown(f"<div class='bot-bubble'>{safe_text}</div>", unsafe_allow_html=True)
-        # Show copy button separately (Streamlit widget) so user can click to copy translation
-        # We give each button a unique key
-        copy_key = f"copy_{i}"
-        st.button("Copy translation", key=copy_key, on_click=st.clipboard_set if hasattr(st, "clipboard_set") else None)
-        # (Note: st.clipboard_set may not be available in all Streamlit versions;
-        #  the button could instead place text into the text_input, or the user can select text)
+        # Use Streamlit components to safely inject HTML + JS for the copy button
+        components.html(f"""
+            <div style="display:flex; flex-direction:column; align-items:flex-start; margin-bottom:8px;">
+                <div id="bot_msg_{i}" class="bot-bubble" style="
+                    background-color:#E5E5EA;
+                    color:black;
+                    padding:10px 16px;
+                    border-radius:18px;
+                    max-width:80%;
+                    word-wrap:break-word;
+                ">{safe_text}</div>
+                <button id="copy_btn_{i}" style="
+                    margin-top:4px;
+                    padding:6px 12px;
+                    border:none;
+                    border-radius:8px;
+                    background-color:#0078FF;
+                    color:white;
+                    cursor:pointer;
+                ">Copy translation</button>
+            </div>
+            <script>
+                const btn = document.getElementById("copy_btn_{i}");
+                const textElem = document.getElementById("bot_msg_{i}");
+                if (btn && textElem) {{
+                    btn.onclick = async () => {{
+                        try {{
+                            await navigator.clipboard.writeText(textElem.innerText);
+                            btn.innerText = "Copied!";
+                            setTimeout(() => btn.innerText = "Copy translation", 2000);
+                        }} catch (err) {{
+                            btn.innerText = "Failed!";
+                        }}
+                    }};
+                }}
+            </script>
+        """, height=90)
+
 st.markdown("<div id='bottom-anchor'></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Auto-scroll JavaScript - ensures chat always shows latest message
+# ---------------- Auto-scroll (improved) ----------------
 st.markdown("""
     <script>
-        const chatContainer = document.getElementById('chat-container');
-        if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        function scrollToBottom() {
+            const chatContainer = document.getElementById('chat-container');
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
         }
 
-        // Re-run after Streamlit finishes rendering
+        // Delay scroll slightly after DOM updates
         window.addEventListener('load', () => {
-            const element = document.getElementById('bottom-anchor');
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }
+            setTimeout(scrollToBottom, 300);
         });
+
+        // Also scroll when Streamlit updates DOM dynamically
+        new MutationObserver(() => setTimeout(scrollToBottom, 150))
+            .observe(document.body, { childList: true, subtree: true });
     </script>
 """, unsafe_allow_html=True)
 
@@ -227,3 +264,5 @@ if st.session_state.messages:
         st.session_state.messages.append({"role": "bot", "content": translation, "time": time.time()})
         # rerun to show bot message (this will trigger auto-scroll)
         st.rerun()
+
+
