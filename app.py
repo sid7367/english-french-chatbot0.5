@@ -9,18 +9,52 @@ import time
 import streamlit.components.v1 as components
 
 # ---------------- Page config (must be first Streamlit call) ----------------
-st.set_page_config(page_title="English ↔ French Translator", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="English ↔ French Translator | AI-Powered Translation",
+    page_icon="🇫🇷",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'About': "# English-French Translation Chatbot\nPowered by Helsinki-NLP Marian MT model"
+    }
+)
 
 # ---------------- Sidebar / Settings ----------------
-st.sidebar.title("Settings")
-model_name = st.sidebar.text_input("Hugging Face model name", value="Helsinki-NLP/opus-mt-en-fr",
-                                  help="Change to another Marian model if you like (e.g. opus-mt-en-de).")
-device_opt = st.sidebar.selectbox("Device", options=["cpu", "cuda" if torch.cuda.is_available() else "cpu"])
-max_input_chars = st.sidebar.number_input("Max input characters", min_value=100, max_value=20000, value=4000, step=100)
+st.sidebar.title("⚙️ Settings")
+
+st.sidebar.markdown("### 🤖 Model Configuration")
+model_name = st.sidebar.text_input(
+    "Hugging Face model name", 
+    value="Helsinki-NLP/opus-mt-en-fr",
+    help="Change to another Marian model if you like (e.g. opus-mt-en-de)."
+)
+
+device_opt = st.sidebar.selectbox(
+    "Computing Device", 
+    options=["cpu", "cuda" if torch.cuda.is_available() else "cpu"],
+    help="Select CPU or GPU (CUDA) for processing"
+)
+
+max_input_chars = st.sidebar.number_input(
+    "Max input characters", 
+    min_value=100, 
+    max_value=20000, 
+    value=4000, 
+    step=100,
+    help="Maximum number of characters allowed in a single translation"
+)
+
 show_model_info = st.sidebar.checkbox("Show model info after load", value=True)
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("Features:\n- Chat history\n- Clear and Download\n- Copy translation button")
+st.sidebar.markdown("### ✨ Features")
+st.sidebar.markdown("""
+- 💬 **Chat history** - Keep track of all translations
+- 📋 **Copy button** - Easily copy translations
+- 💾 **Download** - Save your conversation
+- 🗑️ **Clear** - Start fresh anytime
+- 📱 **Responsive** - Works on mobile devices
+""")
 
 # ----------------- Model loading (cached) -----------------
 @st.cache_resource
@@ -34,20 +68,21 @@ def load_model_and_tokenizer(name: str, device: str) -> Tuple[MarianMTModel, Mar
     return model, tokenizer
 
 # Show spinner while loading
-with st.spinner(f"Loading model {model_name} ({device_opt}) ... this may take a while"):
+with st.spinner(f"🔄 Loading model {model_name} on {device_opt}... This may take a moment."):
     try:
         model, tokenizer = load_model_and_tokenizer(model_name, device_opt)
     except Exception as e:
-        st.error(f"Error loading model: {e}")
+        st.error(f"❌ Error loading model: {e}")
         st.stop()
 
 if show_model_info:
-    st.sidebar.success(f"Model loaded: {model_name} on {device_opt}")
+    st.sidebar.success(f"✅ Model loaded successfully!\n\n**Model:** {model_name}\n\n**Device:** {device_opt.upper()}")
 
 # ----------------- CSS -----------------
 # ----------------- Modern Visual Theme -----------------
 st.markdown("""
     <style>
+<<<<<<< HEAD
     /* Global background */
     body {
         background-color: #F5F7FA;
@@ -68,11 +103,24 @@ st.markdown("""
     }
 
     /* Chat container */
+=======
+    /* Global styles */
+    body { 
+        background-color: #F5F7FA; 
+    }
+    
+    /* Hide Streamlit default elements for cleaner UI */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* Chat container with proper scrolling */
+>>>>>>> 254bf76f15cbbd2deb4cf5bdd87af6d298c42f59
     .chat-container {
         display: flex;
         flex-direction: column;
         width: 100%;
         max-width: 900px;
+<<<<<<< HEAD
         margin: 16px auto;
         height: calc(100vh - 250px);
         overflow-y: auto;
@@ -166,13 +214,144 @@ st.markdown("""
     }
 
     @media (max-width: 600px) {
+=======
+        margin: 0 auto;
+        padding: 16px;
+        padding-bottom: 20px;
+        min-height: 400px;
+        gap: 8px;
+    }
+    
+    /* User message bubble - aligned to right */
+    .user-bubble {
+        background: linear-gradient(135deg, #0078FF 0%, #0063D1 100%);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 20px 20px 4px 20px;
+        margin: 4px 0;
+        margin-left: auto;
+        max-width: 75%;
+        word-wrap: break-word;
+        box-shadow: 0 2px 4px rgba(0, 120, 255, 0.2);
+        font-size: 15px;
+        line-height: 1.5;
+    }
+    
+    /* Bot message bubble - aligned to left */
+    .bot-bubble {
+        background-color: #E5E5EA;
+        color: #000000;
+        padding: 12px 18px;
+        border-radius: 20px 20px 20px 4px;
+        margin: 4px 0;
+        margin-right: auto;
+        max-width: 75%;
+        word-wrap: break-word;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        font-size: 15px;
+        line-height: 1.5;
+    }
+    
+    /* Copy button styling */
+    .copy-btn {
+        margin-top: 6px;
+        margin-left: 0;
+        padding: 6px 14px;
+        border: none;
+        border-radius: 10px;
+        background-color: #0078FF;
+        color: white;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 120, 255, 0.2);
+    }
+    
+    .copy-btn:hover {
+        background-color: #0063D1;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(0, 120, 255, 0.3);
+    }
+    
+    .copy-btn:active {
+        transform: translateY(0);
+    }
+    
+    /* Message wrapper for proper alignment */
+    .message-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 8px;
+        width: 100%;
+    }
+    
+    .user-message-wrapper {
+        align-items: flex-end;
+    }
+    
+    /* Input area improvements */
+    .stTextArea textarea {
+        border-radius: 12px;
+        border: 2px solid #E5E5EA;
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .stTextArea textarea:focus {
+        border-color: #0078FF;
+        box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.1);
+    }
+    
+    /* Button styling */
+    .stButton button {
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .stButton button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Download button styling */
+    .stDownloadButton button {
+        border-radius: 12px;
+        padding: 10px 20px;
+    }
+    
+    /* Character counter */
+    .stCaption {
+        font-size: 13px;
+        color: #666;
+        margin-top: 4px;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+>>>>>>> 254bf76f15cbbd2deb4cf5bdd87af6d298c42f59
         .user-bubble, .bot-bubble {
-            max-width: 95%;
+            max-width: 85%;
+            font-size: 14px;
+            padding: 10px 14px;
         }
         .chat-container {
+<<<<<<< HEAD
             max-width: 98%;
             padding-left: 10px;
             padding-right: 10px;
+=======
+            padding: 12px 8px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .user-bubble, .bot-bubble {
+            max-width: 90%;
+>>>>>>> 254bf76f15cbbd2deb4cf5bdd87af6d298c42f59
         }
     }
     </style>
@@ -266,8 +445,16 @@ def translate_text(text: str, tokenizer: MarianTokenizer, model: MarianMTModel, 
     return translated
 
 # ---------------- Main layout ----------------
-st.title("🇬🇧 ↔ 🇫🇷 Translation Chat")
-st.write("Type English text and get a French translation. Uses a Marian model locally.")
+st.title("🇬🇧 ↔ 🇫🇷 English-French Translation Chat")
+st.markdown("""
+    <p style='font-size: 18px; color: #666; margin-bottom: 24px;'>
+        ✨ Type English text and get instant French translation powered by AI
+    </p>
+""", unsafe_allow_html=True)
+
+# Show helpful tip if no messages yet
+if not st.session_state.messages:
+    st.info("👋 Welcome! Type your English text below and click 'Translate' to get started.", icon="💡")
 
 # Chat area (render messages)
 st.markdown("<div class='chat-container' id='chat-container'>", unsafe_allow_html=True)
@@ -275,29 +462,44 @@ for i, msg in enumerate(st.session_state.messages):
     safe_text = html.escape(msg["content"]).replace("\n", "<br>")
 
     if msg["role"] == "user":
-        st.markdown(f"<div class='user-bubble'>{safe_text}</div>", unsafe_allow_html=True)
-
+        # User message aligned to the right
+        st.markdown(f"""
+            <div class="message-wrapper user-message-wrapper">
+                <div class='user-bubble'>{safe_text}</div>
+            </div>
+        """, unsafe_allow_html=True)
     else:
-        # Use Streamlit components to safely inject HTML + JS for the copy button
+        # Bot message with copy button, aligned to the left
         components.html(f"""
-            <div style="display:flex; flex-direction:column; align-items:flex-start; margin-bottom:8px;">
-                <div id="bot_msg_{i}" class="bot-bubble" style="
+            <div class="message-wrapper" style="display:flex; flex-direction:column; align-items:flex-start; width:100%; margin-bottom:12px;">
+                <div id="bot_msg_{i}" style="
                     background-color:#E5E5EA;
-                    color:black;
-                    padding:10px 16px;
-                    border-radius:18px;
-                    max-width:80%;
+                    color:#000000;
+                    padding:12px 18px;
+                    border-radius:20px 20px 20px 4px;
+                    max-width:75%;
                     word-wrap:break-word;
+                    box-shadow:0 2px 4px rgba(0,0,0,0.08);
+                    font-size:15px;
+                    line-height:1.5;
+                    margin:4px 0;
                 ">{safe_text}</div>
-                <button id="copy_btn_{i}" style="
-                    margin-top:4px;
-                    padding:6px 12px;
+                <button id="copy_btn_{i}" class="copy-btn" style="
+                    margin-top:6px;
+                    padding:6px 14px;
                     border:none;
-                    border-radius:8px;
+                    border-radius:10px;
                     background-color:#0078FF;
                     color:white;
                     cursor:pointer;
-                ">Copy translation</button>
+                    font-size:13px;
+                    font-weight:500;
+                    transition:all 0.2s ease;
+                    box-shadow:0 2px 4px rgba(0,120,255,0.2);
+                " onmouseover="this.style.backgroundColor='#0063D1'; this.style.transform='translateY(-1px)'" 
+                   onmouseout="this.style.backgroundColor='#0078FF'; this.style.transform='translateY(0)'">
+                    📋 Copy translation
+                </button>
             </div>
             <script>
                 const btn = document.getElementById("copy_btn_{i}");
@@ -305,58 +507,59 @@ for i, msg in enumerate(st.session_state.messages):
                 if (btn && textElem) {{
                     btn.onclick = async () => {{
                         try {{
-                            await navigator.clipboard.writeText(textElem.innerText);
-                            btn.innerText = "Copied!";
-                            setTimeout(() => btn.innerText = "Copy translation", 2000);
+                            const text = textElem.innerText || textElem.textContent;
+                            await navigator.clipboard.writeText(text);
+                            btn.innerHTML = "✓ Copied!";
+                            btn.style.backgroundColor = "#28a745";
+                            setTimeout(() => {{
+                                btn.innerHTML = "📋 Copy translation";
+                                btn.style.backgroundColor = "#0078FF";
+                            }}, 2000);
                         }} catch (err) {{
-                            btn.innerText = "Failed!";
+                            btn.innerHTML = "✗ Failed";
+                            btn.style.backgroundColor = "#dc3545";
+                            setTimeout(() => {{
+                                btn.innerHTML = "📋 Copy translation";
+                                btn.style.backgroundColor = "#0078FF";
+                            }}, 2000);
                         }}
                     }};
                 }}
             </script>
-        """, height=90)
+        """, height=110)
 
-st.markdown("<div id='bottom-anchor'></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Auto-scroll JavaScript - ensures chat always shows latest message
-# ---------------- Auto-scroll (improved) ----------------
-st.markdown("""
-    <script>
-        function scrollToBottom() {
-            const chatContainer = document.getElementById('chat-container');
-            if (chatContainer) {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-        }
 
-        // Delay scroll slightly after DOM updates
-        window.addEventListener('load', () => {
-            setTimeout(scrollToBottom, 300);
-        });
+# ---------------- Input bar ----------------
+st.markdown("---")
+st.subheader("💬 Enter your message")
 
-        // Also scroll when Streamlit updates DOM dynamically
-        new MutationObserver(() => setTimeout(scrollToBottom, 150))
-            .observe(document.body, { childList: true, subtree: true });
-    </script>
-""", unsafe_allow_html=True)
-
-
-# ---------------- Input bar (fixed) ----------------
 with st.form("input_form", clear_on_submit=True):
-    cols = st.columns([8, 1, 1])
-    with cols[0]:
-        user_text = st.text_area("Type your English text here:", height=80, placeholder="Type a message…", key="user_input_field")
-        char_count = len(user_text or "")
-        st.caption(f"Characters: {char_count}/{int(max_input_chars)}")
-    with cols[1]:
-        submit = st.form_submit_button("Translate")
-    with cols[2]:
-        clear = st.form_submit_button("Clear chat")
+    user_text = st.text_area(
+        "Type your English text here:", 
+        height=100, 
+        placeholder="Type your message in English...", 
+        key="user_input_field",
+        label_visibility="collapsed"
+    )
+    char_count = len(user_text or "")
+    st.caption(f"✏️ Characters: {char_count}/{int(max_input_chars)}")
+    
+    # Button row with better spacing
+    col1, col2, col3 = st.columns([2, 1, 1])
+    with col1:
+        submit = st.form_submit_button("🚀 Translate", use_container_width=True, type="primary")
+    with col2:
+        clear = st.form_submit_button("🗑️ Clear chat", use_container_width=True)
+    with col3:
+        pass  # Empty column for spacing
 
-# Buttons under input for download / extra controls
-download_buffer = None
+# Additional controls with better layout
 if st.session_state.messages:
+    st.markdown("---")
+    st.subheader("📥 Download & Manage")
+    
     # prepare text for download
     buf = io.StringIO()
     for m in st.session_state.messages:
@@ -364,20 +567,27 @@ if st.session_state.messages:
         role = "User" if m["role"] == "user" else "Bot"
         buf.write(f"[{t}] {role}: {m['content']}\n\n")
     download_buffer = buf.getvalue()
-
-col_dl1, col_dl2 = st.columns([1, 1])
-with col_dl1:
-    if download_buffer:
-        st.download_button("Download chat", data=download_buffer, file_name="chat_history.txt", mime="text/plain")
-with col_dl2:
-    if st.button("Clear local chat history"):
-        st.session_state.messages = []
-        st.rerun()
+    
+    col_dl1, col_dl2, col_dl3 = st.columns([2, 2, 2])
+    with col_dl1:
+        st.download_button(
+            "💾 Download chat history", 
+            data=download_buffer, 
+            file_name="translation_history.txt", 
+            mime="text/plain",
+            use_container_width=True
+        )
+    with col_dl2:
+        if st.button("🗑️ Clear all messages", use_container_width=True):
+            st.session_state.messages = []
+            st.rerun()
+    with col_dl3:
+        st.metric("Messages", len(st.session_state.messages))
 
 # ---------------- Handle submission & translation ----------------
 if submit:
     if (user_text or "").strip() == "":
-        st.warning("Please type something to translate.")
+        st.warning("⚠️ Please type something to translate.", icon="⚠️")
     else:
         # add user message
         st.session_state.messages.append({"role": "user", "content": user_text.strip(), "time": time.time()})
@@ -385,21 +595,33 @@ if submit:
         st.rerun()
 
 # When a new user message exists and no bot reply yet, do translation
-# (We check last two messages to detect a user message without a bot response.)
 if st.session_state.messages:
     last = st.session_state.messages[-1]
-    need_reply = (last["role"] == "user") and (len(st.session_state.messages) == 1 or st.session_state.messages[-1]["role"] == "user")
-    # Another safe check: if last user message doesn't already have a bot reply next
+    # Check if last message is from user and needs a reply
     if last["role"] == "user":
         # Translate synchronously (blocking)
         try:
-            with st.spinner("Translating..."):
+            with st.spinner("🔄 Translating your message..."):
                 translation = translate_text(last["content"], tokenizer, model, device_opt)
         except Exception as e:
-            st.error(f"Translation failed: {e}")
-            translation = "⚠️ Error during translation."
+            st.error(f"❌ Translation failed: {e}", icon="❌")
+            translation = "⚠️ Error during translation. Please try again."
         st.session_state.messages.append({"role": "bot", "content": translation, "time": time.time()})
-        # rerun to show bot message (this will trigger auto-scroll)
+        # rerun to show bot message
         st.rerun()
 
+# ---------------- Footer ----------------
+st.markdown("---")
+st.markdown("""
+    <div style='text-align: center; color: #666; padding: 20px 0;'>
+        <p style='font-size: 14px;'>
+            <strong>English-French Translation Chatbot</strong> | 
+            Powered by <a href='https://huggingface.co/Helsinki-NLP/opus-mt-en-fr' target='_blank'>Helsinki-NLP Marian MT</a> | 
+            Built with ❤️ using Streamlit
+        </p>
+        <p style='font-size: 12px; color: #999;'>
+            💡 Tip: The model processes text locally for privacy. Longer texts may take more time to translate.
+        </p>
+    </div>
+""", unsafe_allow_html=True)
 
