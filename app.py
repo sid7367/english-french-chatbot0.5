@@ -45,68 +45,205 @@ if show_model_info:
     st.sidebar.success(f"Model loaded: {model_name} on {device_opt}")
 
 # ----------------- CSS -----------------
+# ----------------- Modern Visual Theme -----------------
 st.markdown("""
     <style>
-    body { background-color: #F5F7FA; }
+    /* Global background */
+    body {
+        background-color: #F5F7FA;
+        font-family: "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Header bar */
+    .header-bar {
+        background: linear-gradient(90deg, #0078FF, #00B4FF);
+        color: white;
+        text-align: center;
+        padding: 14px;
+        font-size: 22px;
+        font-weight: 600;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        letter-spacing: 0.4px;
+    }
+
+    /* Chat container */
     .chat-container {
         display: flex;
         flex-direction: column;
         width: 100%;
         max-width: 900px;
         margin: 16px auto;
-        height: calc(100vh - 220px);
+        height: calc(100vh - 250px);
         overflow-y: auto;
-        padding: 12px;
-        margin-bottom: 140px;
+        padding: 16px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        margin-bottom: 160px;
     }
+
+    /* User message bubble */
     .user-bubble {
-        background-color: #0078FF;
+        background: linear-gradient(135deg, #0078FF, #00B4FF);
         color: white;
-        padding: 10px 16px;
-        border-radius: 18px;
-        margin: 6px;
+        padding: 12px 18px;
+        border-radius: 18px 18px 4px 18px;
+        margin: 8px;
         text-align: right;
         align-self: flex-end;
-        max-width: 80%;
+        max-width: 75%;
         word-wrap: break-word;
+        line-height: 1.5;
     }
+
+    /* Bot message bubble */
     .bot-bubble {
-        background-color: #E5E5EA;
+        background-color: #EAEAEA;
         color: black;
-        padding: 10px 16px;
-        border-radius: 18px;
-        margin: 6px;
+        padding: 12px 18px;
+        border-radius: 18px 18px 18px 4px;
+        margin: 8px;
         align-self: flex-start;
-        max-width: 80%;
+        max-width: 75%;
         word-wrap: break-word;
+        line-height: 1.5;
     }
-    .meta {
-        font-size: 12px;
-        opacity: 0.7;
-        margin-top: 4px;
-    }
+    
+    /* Input bar */
     .input-bar {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: white;
-        padding: 12px 20px;
-        box-shadow: 0 -2px 6px rgba(0,0,0,0.08);
+        background-color: #ffffff;
+        padding: 14px 24px;
+        box-shadow: 0 -2px 15px rgba(0,0,0,0.07);
+        display: flex;
+        align-items: center;
+        gap: 10px;
         z-index: 1000;
     }
+
+    /* Input field */
+    textarea {
+        flex: 1;
+        border: 1px solid #d0d0d0 !important;
+        border-radius: 24px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+        resize: none !important;
+        transition: all 0.2s ease;
+        box-shadow: none !important;
+    }
+    textarea:focus {
+        border-color: #0078FF !important;
+        box-shadow: 0 0 4px rgba(0,120,255,0.3) !important;
+    }
+
+    /* Buttons */
+    button[kind="primary"] {
+        background-color: #0078FF !important;
+        border: none !important;
+        border-radius: 20px !important;
+        color: white !important;
+        font-weight: 500 !important;
+        transition: background 0.2s ease;
+    }
+    button[kind="primary"]:hover {
+        background-color: #005ec7 !important;
+    }
+
+    /* Sidebar style */
+    section[data-testid="stSidebar"] {
+        background-color: #F0F4FA !important;
+        border-right: 1px solid #E0E0E0 !important;
+    }
+
+    /* Make scroll smooth */
+    .chat-container {
+        scroll-behavior: smooth;
+    }
+
     @media (max-width: 600px) {
         .user-bubble, .bot-bubble {
             max-width: 95%;
         }
         .chat-container {
             max-width: 98%;
-            padding-left: 8px;
-            padding-right: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
         }
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Add custom header bar (before title)
+st.markdown("<div class='header-bar' >🇬🇧 English → 🇫🇷 French Translator</div>", unsafe_allow_html=True)
+
+
+# st.markdown("""
+#     <style>
+#     body { background-color: #F5F7FA; }
+#     .chat-container {
+#         display: flex;
+#         flex-direction: column;
+#         width: 100%;
+#         max-width: 900px;
+#         margin: 16px auto;
+#         height: calc(100vh - 220px);
+#         overflow-y: auto;
+#         padding: 12px;
+#         margin-bottom: 140px;
+#     }
+#     .user-bubble {
+#         background-color: #0078FF;
+#         color: white;
+#         padding: 10px 16px;
+#         border-radius: 18px;
+#         margin: 6px;
+#         text-align: right;
+#         align-self: flex-end;
+#         max-width: 80%;
+#         word-wrap: break-word;
+#     }
+#     .bot-bubble {
+#         background-color: #E5E5EA;
+#         color: black;
+#         padding: 10px 16px;
+#         border-radius: 18px;
+#         margin: 6px;
+#         align-self: flex-start;
+#         max-width: 80%;
+#         word-wrap: break-word;
+#     }
+#     .meta {
+#         font-size: 12px;
+#         opacity: 0.7;
+#         margin-top: 4px;
+#     }
+#     .input-bar {
+#         position: fixed;
+#         bottom: 0;
+#         left: 0;
+#         right: 0;
+#         background-color: white;
+#         padding: 12px 20px;
+#         box-shadow: 0 -2px 6px rgba(0,0,0,0.08);
+#         z-index: 1000;
+#     }
+#     @media (max-width: 600px) {
+#         .user-bubble, .bot-bubble {
+#             max-width: 95%;
+#         }
+#         .chat-container {
+#             max-width: 98%;
+#             padding-left: 8px;
+#             padding-right: 8px;
+#         }
+#     }
+#     </style>
+# """, unsafe_allow_html=True)
 
 # ---------------- Session state for messages ----------------
 if "messages" not in st.session_state:
