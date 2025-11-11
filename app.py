@@ -82,7 +82,6 @@ if show_model_info:
 # ----------------- Modern Visual Theme -----------------
 st.markdown("""
     <style>
-<<<<<<< HEAD
     /* Global background */
     body {
         background-color: #F5F7FA;
@@ -103,7 +102,6 @@ st.markdown("""
     }
 
     /* Chat container */
-=======
     /* Global styles */
     body { 
         background-color: #F5F7FA; 
@@ -114,13 +112,11 @@ st.markdown("""
     footer {visibility: hidden;}
     
     /* Chat container with proper scrolling */
->>>>>>> 254bf76f15cbbd2deb4cf5bdd87af6d298c42f59
     .chat-container {
         display: flex;
         flex-direction: column;
         width: 100%;
         max-width: 900px;
-<<<<<<< HEAD
         margin: 16px auto;
         height: calc(100vh - 250px);
         overflow-y: auto;
@@ -214,7 +210,6 @@ st.markdown("""
     }
 
     @media (max-width: 600px) {
-=======
         margin: 0 auto;
         padding: 16px;
         padding-bottom: 20px;
@@ -332,18 +327,15 @@ st.markdown("""
     
     /* Responsive design */
     @media (max-width: 768px) {
->>>>>>> 254bf76f15cbbd2deb4cf5bdd87af6d298c42f59
         .user-bubble, .bot-bubble {
             max-width: 85%;
             font-size: 14px;
             padding: 10px 14px;
         }
         .chat-container {
-<<<<<<< HEAD
             max-width: 98%;
             padding-left: 10px;
             padding-right: 10px;
-=======
             padding: 12px 8px;
         }
     }
@@ -351,7 +343,6 @@ st.markdown("""
     @media (max-width: 480px) {
         .user-bubble, .bot-bubble {
             max-width: 90%;
->>>>>>> 254bf76f15cbbd2deb4cf5bdd87af6d298c42f59
         }
     }
     </style>
